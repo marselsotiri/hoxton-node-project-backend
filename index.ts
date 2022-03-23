@@ -24,9 +24,14 @@ async function getUserFromToken(token: string) {
   const decodedData = jwt.verify(token, process.env.MY_SECRET)
   const user = await prisma.user.findUnique({
     // @ts-ignore
-    where: { id: decodedData.id },
-    include: { users: true }
+    where: { id: decodedData.id }
   })
+  const conversations = await prisma.conversation.findMany({
+    where: { OR: [{ participantId: user?.id }, { userId: user?.id }] },
+    include: { messages: true, partecipant: true, user: true }
+  })
+  //@ts-ignore
+  user.conversations = conversations
 
   return user
 }
@@ -40,6 +45,8 @@ app.post('/sign-up', async (req, res) => {
       //@ts-ignore
       data: { email: email, password: hash, fullName: fullName, phoneNr: phoneNr, profilePhoto: profilePhoto, userStatus: userStatus }
     })
+    //@ts-ignore
+    user.conversations = []
     res.send({ user, token: createToken(user.id) })
   } catch (err) {
     // @ts-ignore
@@ -51,9 +58,23 @@ app.post('/login', async (req, res) => {
   const { email, password, phoneNr } = req.body
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: email }
+    let user
+    if (email) {
+      user = await prisma.user.findUnique({
+        where: { email: email }
+      })
+    } else {
+      user = await prisma.user.findUnique({
+        where: { phoneNr: phoneNr }
+      })
+    }
+    const conversations = await prisma.conversation.findMany({
+      where: { OR: [{ participantId: user?.id }, { userId: user?.id }] },
+      include: { messages: true }
     })
+
+    //@ts-ignore
+    user.conversations = conversations
     // @ts-ignore
     const passwordMatches = bcrypt.compareSync(password, user.password)
 
@@ -79,6 +100,23 @@ app.get('/validate', async (req, res) => {
     res.status(400).send({ error: err.message })
   }
 })
+
+// app.patch('/status', async (req, res) => {
+//   const token = req.headers.authorization || ''
+//   const { userStatus } = req.body
+
+//   try {
+//     const updatedUser = await prisma.user.update({
+//       where: { email: email },
+//       data: { user: { connect: { name: hobby } } },
+//       include: { hobbies: true }
+//     })
+//     res.send(updatedUser)
+//   } catch (err) {
+//     // @ts-ignore
+//     res.status(400).send(`<pre>${err.message}</pre>`)
+//   }
+// })
 
 
 
