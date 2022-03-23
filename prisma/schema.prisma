@@ -20,7 +20,7 @@ model User {
   profilePhoto String
   users        Conversation[] @relation("User")
   participants Conversation[] @relation("Participant")
-  Message      Message[]
+  messages     Message[]
 }
 
 model Message {
