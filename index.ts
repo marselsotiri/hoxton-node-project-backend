@@ -36,19 +36,6 @@ async function getUserFromToken(token: string) {
   return user
 }
 
-// get => all users✅
-// post => create Conversation (userid, partecipantid)
-
-// await prisma.conversation.create({
-// token
-//   data: { userId, participantId },
-//   include: { messages: true, partecipant: true, user: true }
-// })
-
-// post=> create Messages (textmesages, userid, conversationid)
-// await prisma.message.create({
-//   data: { textmesages, userid, conversationid }
-// })
 
 app.get('/users', async (req, res) => {
   const users = await prisma.user.findMany()
