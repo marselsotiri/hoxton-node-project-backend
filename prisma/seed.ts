@@ -22,7 +22,7 @@ const users: Prisma.UserCreateInput[] = [
         email: "marsel@email.com",
         fullName: "Marsel Sotiri",
         password: bcrypt.hashSync('marsel'),
-        phoneNr: "+355665412132",
+        phoneNr: "00355665412132",
         profilePhoto: "https://media-exp1.licdn.com/dms/image/C4E03AQEZZ5esifXyGA/profile-displayphoto-shrink_200_200/0/1610048591945?e=1648684800&v=beta&t=3EHUvjMGuJjYp12KFgNxfAmsXHii03Q0XBRN3IQ1Lao",
         userStatus: "working"
     },
@@ -30,7 +30,7 @@ const users: Prisma.UserCreateInput[] = [
         email: "geri@email.com",
         fullName: "Geri Luga",
         password: bcrypt.hashSync('geri'),
-        phoneNr: "+355665414132",
+        phoneNr: "00355665414132",
         profilePhoto: "https://www.pngitem.com/pimgs/m/78-786293_1240-x-1240-0-avatar-profile-icon-png.png",
         userStatus: "working"
     },
@@ -38,7 +38,7 @@ const users: Prisma.UserCreateInput[] = [
         email: "visard@email.com",
         fullName: "Visard Visi",
         password: bcrypt.hashSync('visi'),
-        phoneNr: "+355665414534",
+        phoneNr: "00355665414534",
         profilePhoto: "https://www.pngitem.com/pimgs/m/78-786293_1240-x-1240-0-avatar-profile-icon-png.png",
         userStatus: "working"
 
@@ -47,7 +47,7 @@ const users: Prisma.UserCreateInput[] = [
         email: "egon@email.com",
         fullName: "Egon Loli",
         password: bcrypt.hashSync('egon'),
-        phoneNr: "+355665417865",
+        phoneNr: "00355665417865",
         profilePhoto: "https://www.pngitem.com/pimgs/m/78-786293_1240-x-1240-0-avatar-profile-icon-png.png",
         userStatus: "working"
     }

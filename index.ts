@@ -36,6 +36,74 @@ async function getUserFromToken(token: string) {
   return user
 }
 
+// get => all users✅
+// post => create Conversation (userid, partecipantid)
+
+// await prisma.conversation.create({
+// token
+//   data: { userId, participantId },
+//   include: { messages: true, partecipant: true, user: true }
+// })
+
+// post=> create Messages (textmesages, userid, conversationid)
+// await prisma.message.create({
+//   data: { textmesages, userid, conversationid }
+// })
+
+app.get('/users', async (req, res) => {
+  const users = await prisma.user.findMany()
+  res.send(users)
+})
+
+app.post('/conversations', async (req, res) => {
+
+  const token = req.headers.authorization || ''
+  const { participantId } = req.body
+
+  try {
+    const user = await getUserFromToken(token)
+
+    const conversation = await prisma.conversation.create({
+      //@ts-ignore
+      data: { participantId: participantId, userId: user.id },
+      include: { messages: true, partecipant: true, user: true }
+    })
+    // @ts-ignore
+    user.conversations.push(conversation)
+    res.send(user)
+  } catch (err) {
+    // @ts-ignore
+    res.status(400).send({ error: err.message })
+  }
+
+})
+
+app.post('/messages', async (req, res) => {
+
+  const token = req.headers.authorization || ''
+  const { textMessage, conversationId } = req.body
+
+
+  try {
+    // const user = await getUserFromToken(token)
+    // @ts-ignore
+    const decodedData = jwt.verify(token, process.env.MY_SECRET)
+
+
+    const message = await prisma.message.create({
+      //@ts-ignore
+      data: { textMessage: textMessage, userId: decodedData.id, conversationId: conversationId },
+    })
+    const userUpdated = await getUserFromToken(token)
+    res.send(userUpdated)
+  } catch (err) {
+    // @ts-ignore
+    res.status(400).send({ error: err.message })
+  }
+
+})
+
+
 app.post('/sign-up', async (req, res) => {
   const { email, password, fullName, phoneNr, profilePhoto, userStatus } = req.body
 
@@ -70,7 +138,7 @@ app.post('/login', async (req, res) => {
     }
     const conversations = await prisma.conversation.findMany({
       where: { OR: [{ participantId: user?.id }, { userId: user?.id }] },
-      include: { messages: true }
+      include: { messages: true, partecipant: true, user: true }
     })
 
     //@ts-ignore
@@ -101,22 +169,26 @@ app.get('/validate', async (req, res) => {
   }
 })
 
-// app.patch('/status', async (req, res) => {
-//   const token = req.headers.authorization || ''
-//   const { userStatus } = req.body
+app.patch('/status', async (req, res) => {
+  const token = req.headers.authorization || ''
+  const { userStatus } = req.body
 
-//   try {
-//     const updatedUser = await prisma.user.update({
-//       where: { email: email },
-//       data: { user: { connect: { name: hobby } } },
-//       include: { hobbies: true }
-//     })
-//     res.send(updatedUser)
-//   } catch (err) {
-//     // @ts-ignore
-//     res.status(400).send(`<pre>${err.message}</pre>`)
-//   }
-// })
+  try {
+    // @ts-ignore
+    const decodedData = jwt.verify(token, process.env.MY_SECRET)
+
+    const updatedUser = await prisma.user.update({
+      // @ts-ignore
+      where: { id: decodedData.id },
+      data: { userStatus: userStatus }
+    })
+    const user = await getUserFromToken(token)
+    res.send(user)
+  } catch (err) {
+    // @ts-ignore
+    res.status(400).send({ error: err.message })
+  }
+})
 
 
 
