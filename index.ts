@@ -114,15 +114,10 @@ app.post('/login', async (req, res) => {
 
   try {
     let user
-    if (email) {
-      user = await prisma.user.findUnique({
-        where: { email: email }
-      })
-    } else {
-      user = await prisma.user.findUnique({
-        where: { phoneNr: phoneNr }
-      })
-    }
+    user = await prisma.user.findUnique({
+      where: { email: email, phoneNr: phoneNr }
+    })
+
     const conversations = await prisma.conversation.findMany({
       where: { OR: [{ participantId: user?.id }, { userId: user?.id }] },
       include: { messages: true, partecipant: true, user: true }
