@@ -37,7 +37,7 @@ Node.js, Cors, Sqlite, Prisma, Express...
 
 ## Lessons Learned
 
-While working onn this project I learned how to work in pairs and how to colaborate to make a React project work.
+While working on this project I learned how to work in pairs and how to colaborate to make a React project work.
 ## Features
 
 - Light/dark mode toggle
